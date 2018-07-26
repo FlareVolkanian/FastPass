@@ -1,0 +1,13 @@
+﻿//fastpassgen -f Grammer.fpg -o Parser.cs -n FastPass -t object -r root -at
+
+//root
+root => lst => x[0]
+
+//many lines
+lst => line lst								 => { var lst = new List<object>(); lst.Add(x[0]); lst.AddRange(x[1] as List<object>); return lst; }
+lst => line									 => { var lst = new List<object>(); lst.Add(x[0]); return lst; }
+
+//single line
+line => USING TEXT NL                        => (x[1] as Token).Value
+line => TEXT \=> TEXT \=> TEXT \LOOK TEXT NL => new Rule((x[0] as Token).Value, (x[2] as Token).Value, (x[4] as Token).Value, (x[6] as Token).Value)
+line => TEXT \=> TEXT \=> TEXT NL            => new Rule((x[0] as Token).Value, (x[2] as Token).Value, (x[4] as Token).Value)

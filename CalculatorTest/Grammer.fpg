@@ -1,0 +1,32 @@
+﻿//fastpassgen -f Grammer.fpg -o Parser.cs -n CalculatorTest -t double? -r root -at
+
+// This grammer not only contains the grammer for the calculator 
+// but it also contains all the logic nessessary for the caluculator
+// to function; the non generated code only contains the text UI 
+// and a simple tokeniser.
+// For something simple like this calculator this approach is fine.
+// However for more complicated tasks this is too naive.
+
+//root
+root => add         => x[0] as double?
+
+//add and subtract
+add => mult + add   => (x[0] as double?).Value + (x[2] as double?).Value
+add => mult - add   => (x[0] as double?).Value - (x[2] as double?).Value
+add => mult         => x[0] as double?
+
+//division and multiplication
+mult => pow * mult  => (x[0] as double?).Value * (x[2] as double?).Value
+mult => pow / mult  => (x[0] as double?).Value / (x[2] as double?).Value
+mult => pow         => x[0] as double?
+
+//power
+pow => atom ^ pow   => Math.Pow((x[0] as double?).Value, (x[2] as double?).Value)
+pow => atom         => x[0] as double?
+
+//atoms
+atom => atom E atom => (x[0] as double?).Value * Math.Pow(10, (x[2] as double?).Value)
+atom => - atom      => -((x[1] as double?).Value)
+atom => + atom      => Math.Abs((x[1] as double?).Value)
+atom => ( add )     => x[1] as double?
+atom => NUM         => double.Parse((x[0] as Token).Value)
